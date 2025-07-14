@@ -19,16 +19,19 @@ async function authenticate() {
 }
 
 async function Log(stack, level, pkg, message) {
-  // only backend/frontend
-  if (!['backend','frontend'].includes(stack)) return;
+  if (!['backend','frontend'].includes(stack))   return;
   if (!['debug','info','warn','error','fatal'].includes(level)) return;
-  if (!['cache','controller','cron_job','db','domain','handler','repository','route','service']
-      .includes(pkg)) return;
+  if (![
+    'cache','controller','cron_job','db','domain',
+    'handler','repository','route','service'
+  ].includes(pkg)) return;
 
   await authenticate();
-  await axios.post(LOG_URL, { stack, level, package: pkg, message }, {
-    headers: { Authorization: `Bearer ${token}` }
-  }).catch(e => console.error('Log failed:', e.response?.data || e.message));
+  await axios
+    .post(LOG_URL, { stack, level, package: pkg, message }, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+    .catch(e => console.error('Log failed:', e.response?.data || e.message));
 }
 
 module.exports = Log;
